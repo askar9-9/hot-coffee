@@ -1,11 +1,11 @@
 build:
-	go build -o hot-coffee .
+	go build -o ./cmd/hot-coffee ./cmd/main.go
 
 run:
-	go run main.go --port 8080
+	go run ./cmd/main.go --port 8080
 
 gofumpt:
 	gofumpt -l -w .
 
 clean:
-	rm -f hot-coffee
+	rm -f ./cmd/hot-coffee
