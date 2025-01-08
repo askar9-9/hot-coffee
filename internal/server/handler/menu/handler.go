@@ -2,19 +2,16 @@ package menu
 
 import (
 	"hot-coffee/internal/service"
-	"hot-coffee/pkg/logger"
 	"net/http"
 )
 
 type MenuHandler struct {
 	serv service.ServiceModule
-	log  *logger.CustomLogger
 }
 
-func NewMenuHandler(serv service.ServiceModule, log *logger.CustomLogger) *MenuHandler {
+func NewMenuHandler(serv service.ServiceModule) *MenuHandler {
 	return &MenuHandler{
 		serv: serv,
-		log:  log,
 	}
 }
 

@@ -2,12 +2,11 @@ package inventory
 
 import (
 	"hot-coffee/internal/service"
-	"hot-coffee/pkg/logger"
 	"net/http"
 )
 
-func RegisterInventoryRoutes(router *http.ServeMux, serv service.ServiceModule, logger *logger.CustomLogger) {
-	inventoryHandler := NewInventoryHandler(serv, logger)
+func RegisterInventoryRoutes(router *http.ServeMux, serv service.ServiceModule) {
+	inventoryHandler := NewInventoryHandler(serv)
 
 	router.HandleFunc("GET /inventory", inventoryHandler.ListInventoryItems)
 	router.HandleFunc("POST /inventory", inventoryHandler.AddInventoryItem)

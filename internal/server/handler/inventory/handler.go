@@ -2,19 +2,16 @@ package inventory
 
 import (
 	"hot-coffee/internal/service"
-	"hot-coffee/pkg/logger"
 	"net/http"
 )
 
 type InventoryHandler struct {
 	serv service.ServiceModule
-	log  *logger.CustomLogger
 }
 
-func NewInventoryHandler(serv service.ServiceModule, log *logger.CustomLogger) *InventoryHandler {
+func NewInventoryHandler(serv service.ServiceModule) *InventoryHandler {
 	return &InventoryHandler{
 		serv: serv,
-		log:  log,
 	}
 }
 

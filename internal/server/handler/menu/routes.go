@@ -2,12 +2,11 @@ package menu
 
 import (
 	"hot-coffee/internal/service"
-	"hot-coffee/pkg/logger"
 	"net/http"
 )
 
-func RegisterMenuRoutes(router *http.ServeMux, serv service.ServiceModule, logger *logger.CustomLogger) {
-	menuHandler := NewMenuHandler(serv, logger)
+func RegisterMenuRoutes(router *http.ServeMux, serv service.ServiceModule) {
+	menuHandler := NewMenuHandler(serv)
 
 	router.HandleFunc("GET /menu", menuHandler.ListMenuItems)
 	router.HandleFunc("POST /menu", menuHandler.AddMenuItem)
