@@ -15,9 +15,9 @@ func main() {
 		config.DebugFilePath,
 	)
 
-	repo := postgres.NewPostgres(customLogger)
-	serv := usecase.NewApplication(repo, customLogger)
-	
+	repo := postgres.NewPostgres()
+	serv := usecase.NewApplication(repo)
+
 	serverHTTP := server.NewServer(config.Port, serv, customLogger)
 
 	if err := serverHTTP.Serve(); err != nil {
