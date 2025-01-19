@@ -3,8 +3,9 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -20,7 +21,6 @@ type Postgres struct {
 }
 
 func NewPostgres() *Postgres {
-
 	psqlInfo := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname,

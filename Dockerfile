@@ -2,11 +2,13 @@ FROM golang:1.23
 
 WORKDIR /app
 
-COPY . .
+COPY . . 
 
-# make wait-for-postgres.sh executable
-RUN chmod +x wait-for-postgres.sh
+# Копируем wait-for-it.sh и делаем его исполняемым
+COPY wait-for-it.sh /app/wait-for-it.sh
+RUN chmod +x /app/wait-for-it.sh
 
+# Сборка приложения
 RUN go build -o main .
 
 EXPOSE 8080
