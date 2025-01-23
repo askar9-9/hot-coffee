@@ -5,6 +5,7 @@ type InventoryItem struct {
 	Name         string  `json:"name"`
 	Quantity     float64 `json:"quantity"`
 	Unit         string  `json:"unit"`
+	Price        float64 `json:"price"`
 }
 
 type InventoryTransaction struct {
