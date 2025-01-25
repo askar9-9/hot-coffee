@@ -10,6 +10,7 @@ func (a *Application) AddInventoryItem(item *entity.InventoryItem) {
 }
 
 func (a *Application) GetAllInventoryItems() ([]entity.InventoryItem, error) {
+	// data , err := rep
 	return []entity.InventoryItem{}, nil
 }
 
