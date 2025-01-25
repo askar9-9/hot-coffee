@@ -8,7 +8,7 @@ import (
 func RegisterInventoryRoutes(router *http.ServeMux, serv service.ServiceModule) {
 	inventoryHandler := NewInventoryHandler(serv)
 
-	router.HandleFunc("GET /inventory", inventoryHandler.ListInventoryItems)
+	router.HandleFunc("GET /inventory", inventoryHandler.ListAllInventoryItems)
 	router.HandleFunc("POST /inventory", inventoryHandler.AddInventoryItem)
 	router.HandleFunc("GET /inventory/{id}", inventoryHandler.GetInventoryItem)
 	router.HandleFunc("PUT /inventory/{id}", inventoryHandler.UpdateInventoryItem)
