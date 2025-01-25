@@ -2,6 +2,7 @@ package menu
 
 import (
 	"hot-coffee/internal/service"
+	"hot-coffee/pkg/json"
 	"net/http"
 )
 
@@ -16,7 +17,21 @@ func NewMenuHandler(serv service.ServiceModule) *MenuHandler {
 }
 
 func (h *MenuHandler) ListMenuItems(w http.ResponseWriter, r *http.Request) {
-	// Get menu items
+	menuList, err := h.serv.GetAllMenuItems()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := json.MarshalJson(menuList)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 func (h *MenuHandler) AddMenuItem(w http.ResponseWriter, r *http.Request) {

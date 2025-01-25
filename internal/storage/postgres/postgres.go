@@ -17,7 +17,7 @@ const (
 )
 
 type Postgres struct {
-	DB *sql.DB
+	db *sql.DB
 }
 
 func NewPostgres() *Postgres {
@@ -33,11 +33,11 @@ func NewPostgres() *Postgres {
 
 	log.Println("Successfully connected to the database!")
 
-	return &Postgres{DB: db}
+	return &Postgres{db: db}
 }
 
 func (p *Postgres) Close() {
-	if err := p.DB.Close(); err != nil {
+	if err := p.db.Close(); err != nil {
 		log.Printf("Error closing the database connection: %v", err)
 	}
 }
