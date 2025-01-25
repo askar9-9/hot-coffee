@@ -4,17 +4,19 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+
+	"github.com/lib/pq"
 )
 
 type MenuItem struct {
-	ID          string      `json:"product_id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Price       float64     `json:"price"`
-	Size        string      `json:"size"`
-	Category    string      `json:"category"`
-	Tags        []string    `json:"tags"`
-	MetaData    MetaDataMap `json:"meta_data"`
+	ID          string         `json:"product_id"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Price       float64        `json:"price"`
+	Size        string         `json:"size"`
+	Category    string         `json:"category"`
+	Tags        pq.StringArray `json:"tags"`
+	MetaData    MetaDataMap    `json:"meta_data"`
 }
 
 type MenuItemIngredient struct {
@@ -34,7 +36,7 @@ func (p MetaDataMap) Value() (driver.Value, error) {
 func (p *MetaDataMap) Scan(src interface{}) error {
 	source, ok := src.([]byte)
 	if !ok {
-		return errors.New("Type assertion .([]byte) failed.")
+		return errors.New("type assertion .([]byte) failed")
 	}
 
 	var i interface{}
@@ -45,7 +47,7 @@ func (p *MetaDataMap) Scan(src interface{}) error {
 
 	*p, ok = i.(map[string]interface{})
 	if !ok {
-		return errors.New("Type assertion .(map[string]interface{}) failed.")
+		return errors.New("type assertion .(map[string]interface{}) failed")
 	}
 
 	return nil
