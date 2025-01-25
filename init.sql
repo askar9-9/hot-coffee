@@ -1,4 +1,4 @@
--- 1. Create ENUM types
+-- 1. ENUM Types
 CREATE TYPE order_status AS ENUM ('pending', 'completed', 'cancelled');
 CREATE TYPE payment_method AS ENUM ('cash', 'credit_card', 'debit_card', 'online');
 CREATE TYPE staff_role AS ENUM ('barista', 'manager', 'chef', 'cleaner');
@@ -6,9 +6,9 @@ CREATE TYPE item_size AS ENUM ('small', 'medium', 'large');
 CREATE TYPE unit_type AS ENUM ('grams', 'liters', 'pieces');
 CREATE TYPE transaction_type AS ENUM ('addition', 'removal');
 
--- 2. Create Tables
+-- 2. Tables
 
--- Customers table
+-- Customers Table
 CREATE TABLE customers (
                            id SERIAL PRIMARY KEY,
                            name VARCHAR(100) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE customers (
                            preferences JSONB
 );
 
--- Orders table
+-- Orders Table
 CREATE TABLE orders (
                         id SERIAL PRIMARY KEY,
                         customer_id INT REFERENCES customers(id),
@@ -27,7 +27,15 @@ CREATE TABLE orders (
                         updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Menu Items table
+-- Order Status History Table
+CREATE TABLE order_status_history (
+                                      id SERIAL PRIMARY KEY,
+                                      order_id INT REFERENCES orders(id) ON DELETE CASCADE,
+                                      status order_status NOT NULL,
+                                      changed_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Menu Items Table
 CREATE TABLE menu_items (
                             id SERIAL PRIMARY KEY,
                             name VARCHAR(100) NOT NULL,
@@ -39,7 +47,7 @@ CREATE TABLE menu_items (
                             metadata JSONB
 );
 
--- Order Items table
+-- Order Items Table
 CREATE TABLE order_items (
                              id SERIAL PRIMARY KEY,
                              order_id INT REFERENCES orders(id) ON DELETE CASCADE,
@@ -49,7 +57,7 @@ CREATE TABLE order_items (
                              customization JSONB
 );
 
--- Inventory table
+-- Inventory Table
 CREATE TABLE inventory (
                            id SERIAL PRIMARY KEY,
                            name VARCHAR(100) NOT NULL,
@@ -58,32 +66,7 @@ CREATE TABLE inventory (
                            price NUMERIC(10, 2) NOT NULL
 );
 
--- Menu Item Ingredients table
-CREATE TABLE menu_item_ingredients (
-                                       id SERIAL PRIMARY KEY,
-                                       menu_item_id INT REFERENCES menu_items(id) ON DELETE CASCADE,
-                                       inventory_id INT REFERENCES inventory(id) ON DELETE CASCADE,
-                                       quantity NUMERIC(10, 2) NOT NULL
-);
-
--- Order Status History table
-CREATE TABLE order_status_history (
-                                      id SERIAL PRIMARY KEY,
-                                      order_id INT REFERENCES orders(id) ON DELETE CASCADE,
-                                      status order_status NOT NULL,
-                                      changed_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Price History table
-CREATE TABLE price_history (
-                               id SERIAL PRIMARY KEY,
-                               menu_item_id INT REFERENCES menu_items(id) ON DELETE CASCADE,
-                               old_price NUMERIC(10, 2) NOT NULL,
-                               new_price NUMERIC(10, 2) NOT NULL,
-                               changed_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Inventory Transactions table
+-- Inventory Transactions Table
 CREATE TABLE inventory_transactions (
                                         id SERIAL PRIMARY KEY,
                                         inventory_id INT REFERENCES inventory(id),
@@ -92,13 +75,31 @@ CREATE TABLE inventory_transactions (
                                         created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Create Indexes
+-- Menu Item Ingredients Table
+CREATE TABLE menu_item_ingredients (
+                                       id SERIAL PRIMARY KEY,
+                                       menu_item_id INT REFERENCES menu_items(id) ON DELETE CASCADE,
+                                       inventory_id INT REFERENCES inventory(id) ON DELETE CASCADE,
+                                       quantity NUMERIC(10, 2) NOT NULL
+);
+
+-- Price History Table
+CREATE TABLE price_history (
+                               id SERIAL PRIMARY KEY,
+                               menu_item_id INT REFERENCES menu_items(id) ON DELETE CASCADE,
+                               old_price NUMERIC(10, 2) NOT NULL,
+                               new_price NUMERIC(10, 2) NOT NULL,
+                               changed_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. Indexes
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_menu_items_name ON menu_items USING gin (to_tsvector('english', name));
 CREATE INDEX idx_inventory_name ON inventory(name);
 CREATE INDEX idx_orders_customer_id_status ON orders(customer_id, status);
 
--- 4. Insert Mock Data
+-- 4. Mock Data Inserts
+
 -- Customers
 INSERT INTO customers (name, email, phone, preferences)
 VALUES
@@ -120,7 +121,8 @@ VALUES
     ('Paul Scott', 'paul@example.com', '1122334466', '{"favorite_drink": "latte"}'),
     ('Quinn Lewis', 'quinn@example.com', '2233445577', '{"favorite_drink": "espresso"}'),
     ('Ruby Walker', 'ruby@example.com', '3344556688', '{"favorite_drink": "mocha"}'),
-    ('Sophia Green', 'sophia@example.com', '4455667799', '{"favorite_drink": "americano"}');
+    ('Sophia Green', 'sophia@example.com', '4455667799', '{"favorite_drink": "americano"}'),
+    ('Tom Baker', 'tom@example.com', '5566778800', '{"favorite_drink": "cappuccino"}');
 
 -- Orders
 INSERT INTO orders (customer_id, status, total_amount)
@@ -144,28 +146,65 @@ VALUES
     (17, 'cancelled', 5.50),
     (18, 'pending', 8.50),
     (19, 'completed', 11.00),
-    (20, 'cancelled', 13.00);
+    (20, 'cancelled', 13.00),
+    (2, 'completed', 9.00),
+    (8, 'pending', 15.00),
+    (19, 'cancelled', 4.00),
+    (14, 'completed', 18.00),
+    (7, 'pending', 2.50),
+    (5, 'cancelled', 10.00),
+    (10, 'completed', 8.00),
+    (13, 'pending', 7.00),
+    (6, 'completed', 14.00);
 
--- Order Items
-INSERT INTO order_items (order_id, menu_item_id, quantity, price)
+-- Order Status History
+INSERT INTO order_status_history (order_id, status, changed_at)
 VALUES
-    (1, 1, 1, 4.50),
-    (2, 2, 1, 3.00),
-    (3, 3, 2, 5.00),
-    (4, 4, 1, 4.00),
-    (5, 5, 1, 3.50),
-    (6, 6, 2, 8.00),
-    (7, 7, 1, 6.00),
-    (8, 8, 1, 6.00),
-    (9, 9, 2, 10.00),
-    (10, 10, 1, 3.00),
-    (11, 1, 2, 9.00),
-    (12, 2, 1, 3.00),
-    (13, 3, 2, 10.00),
-    (14, 4, 1, 4.00),
-    (15, 5, 1, 3.50),
-    (16, 6, 1, 4.00),
-    (17, 7, 1, 2.50),
-    (18, 8, 1, 6.00),
-    (19, 9, 1, 5.50),
-    (20, 10, 1, 3.00);
+    (1, 'pending', '2025-01-01 10:00:00+00'),
+    (1, 'completed', '2025-01-01 12:00:00+00'),
+    (2, 'pending', '2025-01-02 09:00:00+00'),
+    (2, 'completed', '2025-01-02 11:00:00+00'),
+    (3, 'pending', '2025-01-03 10:30:00+00'),
+    (3, 'cancelled', '2025-01-03 11:15:00+00'),
+    (4, 'pending', '2025-01-04 14:00:00+00'),
+    (4, 'completed', '2025-01-04 15:30:00+00'),
+    (5, 'pending', '2025-01-05 08:00:00+00'),
+    (5, 'completed', '2025-01-05 09:00:00+00');
+
+-- Menu Items
+INSERT INTO menu_items (name, description, price, size, category, tags, metadata)
+VALUES
+    ('Latte', 'Creamy coffee', 4.50, 'medium', 'beverage', ARRAY['coffee', 'milk'], '{"calories": 200}'),
+    ('Espresso', 'Strong coffee', 3.00, 'small', 'beverage', ARRAY['coffee'], '{"calories": 100}'),
+    ('Cappuccino', 'Foamy coffee', 5.00, 'medium', 'beverage', ARRAY['coffee', 'milk'], '{"calories": 150}'),
+    ('Mocha', 'Chocolate coffee', 6.00, 'large', 'beverage', ARRAY['coffee', 'chocolate'], '{"calories": 250}'),
+    ('Americano', 'Simple coffee', 3.50, 'medium', 'beverage', ARRAY['coffee'], '{"calories": 50}'),
+    ('Croissant', 'Flaky pastry', 2.50, 'small', 'pastry', ARRAY['butter', 'flour'], '{"calories": 300}'),
+    ('Muffin', 'Soft cake', 3.00, 'medium', 'pastry', ARRAY['flour', 'chocolate'], '{"calories": 400}'),
+    ('Bagel', 'Ring-shaped bread', 2.00, 'small', 'pastry', ARRAY['flour', 'sesame'], '{"calories": 250}'),
+    ('Cheesecake', 'Rich dessert', 4.00, 'medium', 'dessert', ARRAY['cheese', 'sugar'], '{"calories": 450}'),
+    ('Brownie', 'Chocolate square', 3.50, 'medium', 'dessert', ARRAY['chocolate', 'flour'], '{"calories": 500}');
+
+-- Inventory
+INSERT INTO inventory (name, quantity, unit, price)
+VALUES
+    ('Coffee Beans', 1000.00, 'grams', 10.00),
+    ('Milk', 200.00, 'liters', 1.50),
+    ('Chocolate', 500.00, 'grams', 5.00),
+    ('Flour', 3000.00, 'grams', 0.80),
+    ('Sugar', 1000.00, 'grams', 0.50),
+    ('Butter', 200.00, 'grams', 3.00),
+    ('Sesame', 100.00, 'grams', 1.00),
+    ('Cheese', 150.00, 'grams', 4.00),
+    ('Vanilla Extract', 50.00, 'grams', 12.00),
+    ('Eggs', 100.00, 'pieces', 0.20),
+    ('Tea Leaves', 300.00, 'grams', 8.00),
+    ('Syrup', 50.00, 'liters', 2.50),
+    ('Whipped Cream', 10.00, 'liters', 3.50),
+    ('Cinnamon', 200.00, 'grams', 6.00),
+    ('Honey', 100.00, 'grams', 7.00),
+    ('Almond Milk', 20.00, 'liters', 2.00),
+    ('Hazelnut', 50.00, 'grams', 10.00),
+    ('Mint Leaves', 100.00, 'grams', 1.50),
+    ('Matcha Powder', 30.00, 'grams', 15.00),
+    ('Ice Cubes', 500.00, 'grams', 0.10);
