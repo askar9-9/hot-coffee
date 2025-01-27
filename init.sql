@@ -208,3 +208,51 @@ VALUES
     ('Mint Leaves', 100.00, 'grams', 1.50),
     ('Matcha Powder', 30.00, 'grams', 15.00),
     ('Ice Cubes', 500.00, 'grams', 0.10);
+
+-- Menu Item Ingredients
+INSERT INTO menu_item_ingredients (menu_item_id, inventory_id, quantity)
+VALUES
+    -- Latte
+    (1, 1, 18.00), -- Coffee Beans
+    (1, 2, 0.25),  -- Milk
+
+    -- Espresso
+    (2, 1, 18.00), -- Coffee Beans
+
+    -- Cappuccino
+    (3, 1, 18.00), -- Coffee Beans
+    (3, 2, 0.15),  -- Milk
+    (3, 13, 0.05), -- Whipped Cream
+
+    -- Mocha
+    (4, 1, 18.00), -- Coffee Beans
+    (4, 2, 0.25),  -- Milk
+    (4, 3, 0.05),  -- Chocolate
+
+    -- Americano
+    (5, 1, 18.00), -- Coffee Beans
+    (5, 20, 0.50), -- Ice Cubes
+
+    -- Croissant
+    (6, 4, 50.00), -- Flour
+    (6, 6, 10.00), -- Butter
+    (6, 10, 1.00), -- Eggs
+
+    -- Muffin
+    (7, 4, 30.00), -- Flour
+    (7, 3, 10.00), -- Chocolate
+    (7, 5, 5.00),  -- Sugar
+
+    -- Bagel
+    (8, 4, 40.00), -- Flour
+    (8, 7, 2.00),  -- Sesame
+
+    -- Cheesecake
+    (9, 8, 20.00), -- Cheese
+    (9, 5, 10.00), -- Sugar
+    (9, 10, 2.00), -- Eggs
+
+    -- Brownie
+    (10, 3, 15.00), -- Chocolate
+    (10, 4, 25.00), -- Flour
+    (10, 5, 5.00);  -- Sugar

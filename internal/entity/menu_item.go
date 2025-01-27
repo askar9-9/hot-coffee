@@ -9,21 +9,21 @@ import (
 )
 
 type MenuItem struct {
-	ID          string         `json:"product_id"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Price       float64        `json:"price"`
-	Size        string         `json:"size"`
-	Category    string         `json:"category"`
-	Tags        pq.StringArray `json:"tags"`
-	MetaData    MetaDataMap    `json:"meta_data"`
+	ID          string                `json:"product_id"`
+	Name        string                `json:"name"`
+	Description string                `json:"description"`
+	Price       float64               `json:"price"`
+	Size        string                `json:"size"`
+	Category    string                `json:"category"`
+	Tags        pq.StringArray        `json:"tags"`
+	MetaData    MetaDataMap           `json:"meta_data"`
+	Ingredients []*MenuItemIngredient `json:"ingredients"`
 }
 
 type MenuItemIngredient struct {
-	ID           string  `json:"id"`
-	MenuItemID   string  `json:"product_id"`
-	IngredientID string  `json:"ingredient_id"`
-	Quantity     float64 `json:"quantity"`
+	IngredientID   string  `json:"ingredient_id"`
+	IngredientName string  `json:"ingredient_name"`
+	Quantity       float64 `json:"quantity"`
 }
 
 type MetaDataMap map[string]interface{}
