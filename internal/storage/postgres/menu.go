@@ -1,6 +1,11 @@
 package postgres
 
-import "hot-coffee/internal/entity"
+import (
+	dbSql "database/sql"
+	"errors"
+	"hot-coffee/internal/entity"
+	errors2 "hot-coffee/internal/errors"
+)
 
 func (p *Postgres) GetAllMenuItems() ([]*entity.MenuItem, error) {
 	sql := `SELECT id, name, description, price, size, category, tags, metadata FROM menu_items`
@@ -90,6 +95,11 @@ func (p *Postgres) GetMenuItemByID(id string) (*entity.MenuItem, error) {
 		&menuItem.Tags,
 		&menuItem.MetaData,
 	)
+
+	// Если элемент не найден
+	if errors.Is(err, dbSql.ErrNoRows) {
+		return nil, errors2.ErrMenuNotFound
+	}
 
 	if err != nil {
 		return nil, err

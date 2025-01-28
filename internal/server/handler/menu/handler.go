@@ -1,7 +1,9 @@
 package menu
 
 import (
+	"errors"
 	"hot-coffee/internal/entity"
+	errors2 "hot-coffee/internal/errors"
 	"hot-coffee/internal/server/handler"
 	"hot-coffee/internal/service"
 	"hot-coffee/pkg/json"
@@ -72,9 +74,16 @@ func (h *MenuHandler) GetMenuItem(w http.ResponseWriter, r *http.Request) {
 	// Get menu item
 	var data []byte
 
-	menu, err := h.serv.GetMenuItemByID(r.PathValue("id"))
+	id := r.PathValue("id")
+
+	menu, err := h.serv.GetMenuItemByID(id)
+	if errors.Is(err, errors2.ErrMenuNotFound) {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
